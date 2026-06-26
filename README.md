@@ -7,6 +7,10 @@ A static two-player Spanish learning version of Tic-Tac-Toe.
 - Two human players: Player X and Player O
 - Players take turns on the same device
 - A player must answer a Spanish question correctly to claim a square
+- Questions are tracked during each match so the same question is not repeated in that game
+- Answer choices are shuffled each time a question is shown
+- The Spanish phrase/text is hidden until after the player has answered
+- The correct answer is only shown after the player has selected an option
 - Clear winner screen when X or O gets three in a row
 - New game button at the end of the match
 - Difficulty levels: beginner, intermediate and advanced
