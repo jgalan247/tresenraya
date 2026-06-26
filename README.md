@@ -1,20 +1,36 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://ai.google.dev/static/site-assets/images/share-ais-513315318.png" />
-</div>
+# Tres en Raya — Spanish Learning Game
 
-# Run and deploy your AI Studio app
+A static two-player Spanish learning version of Tic-Tac-Toe.
 
-This contains everything you need to run your app locally.
+## What this version includes
 
-View your app in AI Studio: https://ai.studio/apps/ee6b49ec-47cd-42c4-8ab0-769a2dc2dfc6
+- Two human players: Player X and Player O
+- Players take turns on the same device
+- A player must answer a Spanish question correctly to claim a square
+- Clear winner screen when X or O gets three in a row
+- New game button at the end of the match
+- Difficulty levels: beginner, intermediate and advanced
+- Categories: vocabulary, travel, grammar, slang and listening
+- Browser text-to-speech pronunciation using the Web Speech API
+- Local statistics saved in the browser with `localStorage`
+- No backend, no Gemini key and no AI dependency
 
-## Run Locally
+## Run locally
 
-**Prerequisites:**  Node.js
+Open `index.html` in a browser.
 
+## Deploy to GitHub Pages
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+This is a static site, so GitHub Pages can serve it directly from the repository root.
+
+1. Go to repository **Settings**.
+2. Open **Pages**.
+3. Choose **Deploy from a branch**.
+4. Select the `main` branch and `/root` folder.
+5. Save.
+
+The site should then be available at:
+
+```text
+https://jgalan247.github.io/tresenraya/
+```
