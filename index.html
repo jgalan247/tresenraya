@@ -34,6 +34,7 @@
 
   <script>
     const CATEGORIES={vocab:{label:"Vocabulario",emoji:"📚"},travel:{label:"Viajes",emoji:"🧭"},grammar:{label:"Gramática",emoji:"🧠"},slang:{label:"Jerga",emoji:"💬"},listening:{label:"Escucha",emoji:"🎧"}};
+    const WINNING_LINES=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
     const QUESTIONS={
       vocab:{beginner:[q("What is 'la manzana' in English?",["Banana","Grape","Apple","Pear"],2,"La manzana means the apple.","la manzana"),q("Which word means 'the book'?",["el cuaderno","el libro","la pluma","la mesa"],1,"El libro means the book.","el libro"),q("What does 'rojo' mean?",["Blue","Red","Green","Yellow"],1,"Rojo means red.","rojo")],intermediate:[q("Translate 'the butterfly'.",["la mariquita","la hormiga","la mariposa","la abeja"],2,"La mariposa means butterfly.","la mariposa"),q("What does 'desarrollar' mean?",["To discharge","To discover","To design","To develop"],3,"Desarrollar means to develop.","desarrollar"),q("What does 'la herramienta' mean?",["The tool","The homework","The screen","The road"],0,"La herramienta means the tool.","la herramienta")],advanced:[q("Which word can mean weariness or boredom?",["el hastío","la algarabía","el regocijo","el sosiego"],0,"El hastío means weariness or boredom.","el hastío"),q("What does 'estremecer' mean?",["To straighten","To shudder or shake","To stretch","To narrow"],1,"Estremecer means to shudder, shake or tremble.","estremecer"),q("What does 'la incertidumbre' mean?",["Certainty","Uncertainty","Achievement","Agreement"],1,"La incertidumbre means uncertainty.","la incertidumbre")]},
       travel:{beginner:[q("How do you ask 'Where is the bathroom?'",["¿Dónde está el baño?","¿Cuánto cuesta esto?","¿Qué hora es?","¿Dónde está la estación?"],0,"¿Dónde está el baño? means Where is the bathroom?","¿Dónde está el baño?"),q("What is the polite way to say 'Please'?",["De nada","Por favor","Muchas gracias","Disculpe"],1,"Por favor means please.","por favor"),q("What does 'la estación' mean?",["The shop","The station","The street","The beach"],1,"La estación means the station.","la estación")],intermediate:[q("How would you ask for the bill?",["¿Me trae la cuenta, por favor?","¿Dónde está la cocina?","¿Tiene un menú del día?","¿Cuánto vale la comida?"],0,"La cuenta is the bill.","¿Me trae la cuenta, por favor?"),q("What is 'un billete de ida y vuelta'?",["Business upgrade","Travel card","Return ticket","One-way ticket"],2,"Ida y vuelta means there and back.","un billete de ida y vuelta"),q("What does 'equipaje de mano' mean?",["Hand luggage","Train platform","Hotel booking","Boarding pass"],0,"Equipaje de mano means hand luggage.","equipaje de mano")],advanced:[q("'El tren tiene un transbordo obligatorio' means you must...",["Collect luggage","Pay a surcharge","Change trains","Buy a new ticket"],2,"Un transbordo is a transfer or connection.","El tren tiene un transbordo obligatorio"),q("What does 'retraso' mean in travel?",["Delay","Discount","Platform","Passport"],0,"Retraso means delay.","el retraso"),q("What does 'hacer escala' mean?",["To check in","To have a stopover","To miss a flight","To book a room"],1,"Hacer escala means to have a stopover.","hacer escala")]},
@@ -85,7 +86,7 @@
     function render(){
       els.difficultyPill.textContent=`Nivel: ${state.difficulty==="beginner"?"Principiante":state.difficulty==="intermediate"?"Intermedio":"Avanzado"}`;
       els.turnBadge.textContent=state.gameActive?`Turno: ${state.turn}`:"Partida terminada";
-      if(!state.gameActive&&state.winner){els.gameTitle.textContent=state.winner==="Draw"?"Empate":`Player ${state.winner} gana`;els.gameMessage.textContent=state.winner==="Draw"?"Good battle. Nobody got the crown.":`Player ${state.winner} got three in a row.`}
+      if(!state.gameActive&&state.winner){els.gameTitle.textContent=state.winner==="Draw"?"Empate":`Player ${state.winner} gana`;els.gameMessage.textContent=state.winner==="Draw"?"No winning line is still possible.":`Player ${state.winner} got three in a row.`}
       else{els.gameTitle.textContent="Elige una casilla";els.gameMessage.textContent="Responde correctamente para reclamar una casilla."}
       renderStats();renderBoard();
     }
@@ -128,14 +129,51 @@
 
     function continueAfterAnswer(){
       const ok=state.selectedAnswer===state.activeQuestion.correctIndex;const i=state.activeCell;
-      if(ok){state.board[i]={...state.board[i],symbol:state.turn,question:state.activeQuestion};els.tutorText.textContent=`Player ${state.turn} claimed the square. Solid.`;const result=checkWinner();if(result.winner)return finishGame(result)}
+      if(ok){
+        state.board[i]={...state.board[i],symbol:state.turn,question:state.activeQuestion};
+        els.tutorText.textContent=`Player ${state.turn} claimed the square. Solid.`;
+        const result=checkWinner();
+        if(result.winner)return finishGame(result);
+      }
       else els.tutorText.textContent=`Incorrect, so Player ${state.turn} does not claim the square.`;
       state.turn=state.turn==="X"?"O":"X";closeQuestion();render();
     }
 
-    function checkWinner(){const lines=[[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];for(const line of lines){const[a,b,c]=line;if(state.board[a].symbol&&state.board[a].symbol===state.board[b].symbol&&state.board[a].symbol===state.board[c].symbol)return{winner:state.board[a].symbol,line}}if(state.board.every(c=>c.symbol))return{winner:"Draw",line:[]};return{winner:null,line:[]}}
-    function finishGame(result){state.gameActive=false;state.winner=result.winner;state.winningLine=result.line;state.stats.gamesPlayed++;if(result.winner==="X")state.stats.playerWins++;else if(result.winner==="O")state.stats.playerOWins++;else state.stats.draws++;els.tutorText.textContent=result.winner==="Draw"?"Draw. Respectable. Very diplomatic.":`Player ${result.winner} wins. Three in a row — textbook behaviour.`;closeQuestion();saveStats();render();showGameOverModal(result.winner)}
-    function showGameOverModal(winner){const draw=winner==="Draw";els.gameOverBadge.textContent=draw?"Empate":"Victoria";els.gameOverTitle.textContent=draw?"Empate":`Player ${winner} wins!`;els.gameOverMessage.textContent=draw?"Nobody got three in a row. Brutally fair.":`Player ${winner} got three in a row. Nueva partida?`;setTimeout(()=>{if(!els.gameOverDialog.open)els.gameOverDialog.showModal();els.playAgainModal.focus()},100)}
+    function checkWinner(){
+      for(const line of WINNING_LINES){
+        const [a,b,c]=line;
+        if(state.board[a].symbol&&state.board[a].symbol===state.board[b].symbol&&state.board[a].symbol===state.board[c].symbol){
+          return{winner:state.board[a].symbol,line,reason:"win"};
+        }
+      }
+      const anyPossibleWinningLine=WINNING_LINES.some(line=>{
+        const symbols=line.map(index=>state.board[index].symbol);
+        return !(symbols.includes("X")&&symbols.includes("O"));
+      });
+      if(!anyPossibleWinningLine)return{winner:"Draw",line:[],reason:"blocked"};
+      if(state.board.every(cell=>cell.symbol))return{winner:"Draw",line:[],reason:"full"};
+      return{winner:null,line:[],reason:null};
+    }
+
+    function finishGame(result){
+      state.gameActive=false;state.winner=result.winner;state.winningLine=result.line;state.stats.gamesPlayed++;
+      if(result.winner==="X")state.stats.playerWins++;else if(result.winner==="O")state.stats.playerOWins++;else state.stats.draws++;
+      if(result.winner==="Draw"){
+        els.tutorText.textContent=result.reason==="blocked"?"Draw. Every possible winning line has been blocked, so nobody can win from here.":"Draw. The board is full.";
+      }else{
+        els.tutorText.textContent=`Player ${result.winner} wins. Three in a row — textbook behaviour.`;
+      }
+      closeQuestion();saveStats();render();showGameOverModal(result.winner,result.reason);
+    }
+
+    function showGameOverModal(winner,reason){
+      const draw=winner==="Draw";
+      els.gameOverBadge.textContent=draw?"Empate":"Victoria";
+      els.gameOverTitle.textContent=draw?"Empate":`Player ${winner} wins!`;
+      els.gameOverMessage.textContent=draw?(reason==="blocked"?"No player can still make three in a row, so the game stops early.":"Nobody got three in a row. Brutally fair."):`Player ${winner} got three in a row. Nueva partida?`;
+      setTimeout(()=>{if(!els.gameOverDialog.open)els.gameOverDialog.showModal();els.playAgainModal.focus()},100);
+    }
+
     function closeGameOverModal(){if(els.gameOverDialog.open)els.gameOverDialog.close()}
     function closeQuestion(){if(els.dialog.open)els.dialog.close();state.activeCell=null;state.activeQuestion=null;state.selectedAnswer=null}
     function speakSpanish(){const text=state.activeQuestion?.spanishText;if(!text||!("speechSynthesis" in window))return;window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang="es-ES";u.rate=.9;window.speechSynthesis.speak(u)}
