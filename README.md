@@ -12,6 +12,7 @@ A static two-player Spanish learning version of Tic-Tac-Toe.
 - The Spanish phrase/text is hidden until after the player has answered
 - The correct answer is only shown after the player has selected an option
 - Clear winner screen when X or O gets three in a row
+- Early draw detection: the game stops if every possible winning line has been blocked and no player can still win
 - New game button at the end of the match
 - Difficulty levels: beginner, intermediate and advanced
 - Categories: vocabulary, travel, grammar, slang and listening
