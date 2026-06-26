@@ -1,0 +1,6 @@
+{
+  "name": "Spanish Tic-Tac-Toe",
+  "description": "An AI-powered Tic-Tac-Toe learning game where claiming a square requires solving tailored Spanish vocabulary, grammar, travel, or listening challenges with audio pronunciation and AI feedback.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
